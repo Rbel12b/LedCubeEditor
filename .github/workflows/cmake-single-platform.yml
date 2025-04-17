@@ -20,7 +20,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
     - name: Install OpenGL dependencies
       run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev libglfw3-dev libglm-dev
 
