@@ -11,6 +11,11 @@
 #include "shader_utils.h"
 #include <algorithm>
 #include <tinyfiledialogs.h>
+#include <chrono>
+#include <thread>
+
+const int target_fps = 60;
+const int frame_time_ms = 1000 / target_fps;
 
 glm::mat4 projection, view;
 
@@ -130,8 +135,13 @@ void exportCBIN()
         "cbin files",
         0);
 
-    if (!file)
+    if (file)
     {
+        std::cout << "You selected: " << file << std::endl;
+    }
+    else
+    {
+        std::cout << "No file selected." << std::endl;
         return;
     }
     std::ofstream out(file, std::ios::binary);
@@ -191,7 +201,7 @@ int main()
 
     GLuint voxelShader = LoadShaderProgram("../shaders/vertex.glsl", "../shaders/fragment.glsl");
 
-    glm::vec3 cameraPos = glm::vec3(-10.0f, 4.5f, cameraDistance);
+    glm::vec3 cameraPos = glm::vec3(-20.0f, 4.5f, cameraDistance);
     auto prevCameraPos = cameraPos;
     glm::vec3 target = glm::vec3(4.5f, 4.5f, 4.5f); // center of 8x8x8 cube
     glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -212,6 +222,7 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        auto start = std::chrono::high_resolution_clock::now();
         glfwPollEvents();
 
         auto &IO = ImGui::GetIO();
@@ -360,6 +371,11 @@ int main()
         drawCube3D((bool (*)[8][8])frames[currentFrame].voxels, voxelShader, cubeVAO, view, projection);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        if (elapsed < frame_time_ms) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(frame_time_ms - elapsed));
+        }
     }
 
     ImGui_ImplOpenGL3_Shutdown();
