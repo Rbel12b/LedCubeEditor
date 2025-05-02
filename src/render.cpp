@@ -101,7 +101,7 @@ void setupRenderer()
 
     glEnable(GL_DEPTH_TEST);
 
-    voxelShader = LoadShaderProgram("../shaders/vertex.glsl", "../shaders/fragment.glsl");
+    voxelShader = LoadShaderProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
 
     cameraPos = glm::vec3(-20.0f, 4.5f, cameraDistance);
     target = glm::vec3(4.5f, 4.5f, 4.5f); // center of 8x8x8 cube
